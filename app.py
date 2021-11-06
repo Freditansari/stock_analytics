@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template
 import random
 from bokeh.models import (HoverTool, FactorRange, Plot, LinearAxis, Grid,
@@ -14,6 +13,31 @@ import pandas as pd
 import numpy as np
 
 app = Flask(__name__)
+
+
+def create_cummulative_chart(stock, stock_ticker):
+    p = figure(
+        x_axis_type="datetime",
+        width=1200,
+        height=800,
+        tools="pan,box_zoom,reset,save,hover",
+        x_axis_label='date',
+        y_axis_label="gains",
+
+    )
+
+    p.title = stock_ticker + " cumulative gains"
+
+    gain_df = stock.tail(600)
+    p.line(x="Date", y="cum_gain", source=gain_df)
+    # p.line(x="Date", y = "ema", source = gain_df.tail(90), color='red')
+
+    hover = p.select(dict(type=HoverTool))
+    hover.tooltips = [("date", "@Date{%F}"),
+                      ("Gains", "@gains{0,0.00 %}")]
+    hover.formatters = {"@Date": 'datetime'}
+    return p
+
 
 def create_monthly_chart(stock, stock_ticker):
     logic = {'Open': 'first',
@@ -58,7 +82,6 @@ def hello_world(ticker):  # put application's code here
     import datetime
     from datetime import timedelta
 
-
     stock_ticker = ticker
 
     end = datetime.datetime.now()
@@ -94,13 +117,16 @@ def hello_world(ticker):  # put application's code here
     hover.formatters = {"@Date": 'datetime'}
 
     monthly_chart = create_monthly_chart(stock, stock_ticker)
+    cummulative_chart = create_cummulative_chart(stock, stock_ticker)
 
+    cummulative_script, cummulative_div = components(cummulative_chart)
     monthly_script, monthly_div = components(monthly_chart)
 
     # show(p)
     script, div = components(p)
 
-    return render_template('chart.html', script=script, div= div, monthly_script=monthly_script, monthly_div= monthly_div)
+    return render_template('chart.html', script=script, div=div, monthly_script=monthly_script, monthly_div=monthly_div,
+                           cummulative_script=cummulative_script, cummulative_div=cummulative_div)
 
 
 if __name__ == '__main__':
