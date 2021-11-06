@@ -129,5 +129,9 @@ def hello_world(ticker):  # put application's code here
                            cummulative_script=cummulative_script, cummulative_div=cummulative_div)
 
 
+@app.route('/')
+def hello_world():  # put application's code here
+    return "Analytics chart"
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
