@@ -130,7 +130,7 @@ def hello_world(ticker):  # put application's code here
 
 
 @app.route('/')
-def hello_world():  # put application's code here
+def banana():  # put application's code here
     return "Analytics chart"
 
 if __name__ == '__main__':
